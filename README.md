@@ -33,4 +33,5 @@ Synchronous meeting time: Wednesdays at 7:00 p.m. MT
 ## Quote
 
 > "The best way to predict the future is to create it." — Peter Drucker
+>
 > "What you do today can improve all your tomorrows." — Ralph Marston 
