@@ -1,0 +1,270 @@
+/* Main Dashboard Layout */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.dashboard {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+
+  &>.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+
+    & h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      color: #172554;
+    }
+
+    & p {
+      margin: 8px 0 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+  }
+}
+
+/* Dashboard Header */
+
+.period {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 11px 16px;
+  color: #475569;
+  font-size: 13px;
+}
+
+/* Summary Cards */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+
+  & .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+
+  & .label {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  & .amount {
+    color: #172554;
+    font-size: 23px;
+    font-weight: 700;
+    margin: 9px 0;
+  }
+
+  & p {
+    color: #94a3b8;
+    font-size: 12px;
+    margin: 0;
+  }
+}
+
+.revenue .icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.expense .icon {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.profit .icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.margin .icon {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+/* Dashboard Sections */
+.section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+
+  &>.header {
+    margin-bottom: 22px;
+
+    & h2 {
+      margin: 0;
+      color: #172554;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    & p {
+      color: #94a3b8;
+      font-size: 13px;
+      margin: 7px 0 0;
+    }
+  }
+}
+
+/* Empty Chart */
+.empty {
+  min-height: 230px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 25px;
+  background: #fafcff;
+
+  & .icon {
+    font-size: 36px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+
+  & h3 {
+    color: #334155;
+    font-size: 15px;
+    margin: 0 0 8px;
+  }
+
+  & p {
+    max-width: 380px;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+/* Profit and Loss Table */
+.table {
+  width: 100%;
+
+  &>.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 17px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+    font-size: 14px;
+
+    & strong {
+      color: #172554;
+      font-weight: 600;
+    }
+
+    &.heading {
+      background: #f8fafc;
+      border-radius: 8px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    &.total {
+      background: #f0fdf4;
+      border-radius: 8px;
+      border-bottom: none;
+      margin-top: 10px;
+      color: #166534;
+      font-weight: 700;
+
+      & strong {
+        color: #15803d;
+      }
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1100px) {
+  .summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 20px;
+
+    &>.header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  .period {
+    align-self: flex-start;
+  }
+
+  .section {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 14px;
+
+    &>.header {
+      & h1 {
+        font-size: 22px;
+      }
+    }
+  }
+
+  .summary {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    & .amount {
+      font-size: 21px;
+    }
+  }
+
+  .table {
+    &>.row {
+      font-size: 12px;
+      padding: 14px 8px;
+    }
+  }
+}

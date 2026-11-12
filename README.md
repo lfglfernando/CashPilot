@@ -20,6 +20,10 @@ Many small business owners struggle to know how much they are actually earning, 
 - Testing: xUnit and Playwright
 - Version Control: Git and GitHub
 
+## Deployment Links
+- Frontend: [Render: https://cashpilot-ua1w.onrender.com](https://cashpilot-ua1w.onrender.com)
+- Backend: [MonsterASP: https://cashpilotapi.runasp.net/](https://cashpilotapi.runasp.net/)
+
 ## Team
 
 - Joshua Matthew Wagstaff

@@ -1,0 +1,159 @@
+.home {
+  width: 100%;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  padding: 100px 24px;
+  text-align: center;
+
+  & .content {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  & h1 {
+    font-size: 52px;
+    line-height: 1.2;
+    color: #111827;
+    margin-bottom: 24px;
+  }
+
+  & p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #6b7280;
+    margin-bottom: 32px;
+  }
+
+  & .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
+
+.primary,
+.secondary {
+  padding: 14px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.primary {
+  background: #2563eb;
+  color: white;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.secondary {
+  border: 1px solid #d1d5db;
+  color: #374151;
+  background: white;
+}
+
+/* Features Section */
+.features {
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+
+.heading {
+  font-size: 34px;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.description {
+  color: #6b7280;
+  font-size: 16px;
+  margin-bottom: 48px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.card {
+  padding: 28px 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: left;
+  background: white;
+
+  & h3 {
+    color: #111827;
+    margin-bottom: 12px;
+  }
+
+  & p {
+    color: #6b7280;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+}
+
+/* About Section */
+.about {
+  background: #f9fafb;
+  padding: 80px 24px;
+  text-align: center;
+
+  & .content {
+    max-width: 750px;
+    margin: auto;
+  }
+
+  & p {
+    color: #6b7280;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+}
+
+/* Call To Action */
+.cta {
+  padding: 80px 24px;
+  text-align: center;
+  background: #1e40af;
+  color: white;
+
+  & h2 {
+    font-size: 34px;
+    margin-bottom: 16px;
+  }
+
+  & p {
+    margin-bottom: 28px;
+    color: #dbeafe;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    & h1 {
+      font-size: 36px;
+    }
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
