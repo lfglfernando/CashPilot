@@ -1,14 +1,13 @@
-
 import { Link } from "react-router-dom";
-import "./Home.css";
+import styles from "./Home.module.scss";
 
 function Home() {
   return (
-    <main className="home">
+    <main className={styles.home}>
 
       {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-content">
+      <section className={styles.hero}>
+        <div className="content">
 
           <h1>
             Take Control of Your Business Finances.
@@ -21,12 +20,12 @@ function Home() {
             simple and straightforward.
           </p>
 
-          <div className="hero-buttons">
-            <Link to="/register" className="primary-button">
+          <div className="buttons">
+            <Link to="/register" className={styles.primary}>
               Create Free Account
             </Link>
 
-            <a href="#features" className="secondary-button">
+            <a href="#features" className={styles.secondary}>
               Explore Features
             </a>
           </div>
@@ -35,19 +34,19 @@ function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="features" id="features">
+      <section className={styles.features} id="features">
 
-        <h2 className="section-heading">
+        <h2 className={styles.heading}>
           Everything You Need to Manage Your Finances
         </h2>
 
-        <p className="section-description">
+        <p className={styles.description}>
           Simple tools to help you understand and grow your business.
         </p>
 
-        <div className="features-grid">
+        <div className={styles.grid}>
 
-          <div className="feature-card">
+          <div className={styles.card}>
             <h3>Income Tracking</h3>
             <p>
               Record and monitor your business income
@@ -55,7 +54,7 @@ function Home() {
             </p>
           </div>
 
-          <div className="feature-card">
+          <div className={styles.card}>
             <h3>Expense Tracking</h3>
             <p>
               Keep track of business expenses and
@@ -63,7 +62,7 @@ function Home() {
             </p>
           </div>
 
-          <div className="feature-card">
+          <div className={styles.card}>
             <h3>Profit Analysis</h3>
             <p>
               Understand your revenue, expenses
@@ -71,7 +70,7 @@ function Home() {
             </p>
           </div>
 
-          <div className="feature-card">
+          <div className={styles.card}>
             <h3>Business Calculators</h3>
             <p>
               Calculate product costs, profit margins
@@ -83,11 +82,11 @@ function Home() {
       </section>
 
       {/* About Section */}
-      <section className="about" id="about">
+      <section className={styles.about} id="about">
 
-        <div className="about-content">
+        <div className="content">
 
-          <h2 className="section-heading">
+          <h2 className={styles.heading}>
             About CashPilot
           </h2>
 
@@ -103,7 +102,7 @@ function Home() {
       </section>
 
       {/* Call To Action */}
-      <section className="cta">
+      <section className={styles.cta}>
 
         <h2>Ready to Take Control?</h2>
 
@@ -112,7 +111,7 @@ function Home() {
           with greater confidence.
         </p>
 
-        <Link to="/register" className="primary-button">
+        <Link to="/register" className={styles.primary}>
           Get Started Today
         </Link>
 
