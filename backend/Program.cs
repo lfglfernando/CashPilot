@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using CashPilot.Data;
+using CashPilot.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -33,10 +34,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Api Stuff Here
-// app.MapGet();
-// app.MapPost();
-// app.MapPut();
-// app.MapDelete();
+// Api Stuff Below
+
+// Transactions
+TransactionCategory.MapRoutes(ref app);
+Transaction.MapRoutes(ref app);
+
+// Api Stuff Above
+
+if (app.Environment.IsDevelopment())
+{
+    await SeedData.InitDb(app.Services);
+}
 
 app.Run();
