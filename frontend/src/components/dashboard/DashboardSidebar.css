@@ -158,7 +158,7 @@
   }
 
   .sidebar-heading,
-  .sidebar-link:not(.active) {
+  .sidebar-link {
     font-size: 0;
   }
 
