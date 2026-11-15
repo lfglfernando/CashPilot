@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using CashPilot.Data;
 using CashPilot.Models;
+using CashPilot.Calculators;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -23,6 +24,14 @@ else if (builder.Environment.IsProduction())
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ProductProfit", policy =>
+    {
+        var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+        policy.WithOrigins(origins).WithMethods("POST").WithHeaders("Content-Type");
+    });
+});
 
 var app = builder.Build();
 
@@ -33,12 +42,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 
 // Api Stuff Below
 
 // Transactions
 TransactionCategory.MapRoutes(ref app);
 Transaction.MapRoutes(ref app);
+
+app.MapProductProfitCalculator();
 
 // Api Stuff Above
 

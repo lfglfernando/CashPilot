@@ -15,6 +15,7 @@ function DashboardSidebar() {
 
         <NavLink
           to="/dashboard"
+          title="Dashboard"
           end
           className={({ isActive }) =>
             isActive ? "sidebar-link active" : "sidebar-link"
@@ -48,10 +49,16 @@ function DashboardSidebar() {
       <div className="sidebar-section">
         <p className="sidebar-heading">OTHER</p>
 
-        <div className="sidebar-link disabled">
-          <span>▣</span>
+        <NavLink
+          to="/calculators/product-profit"
+          title="Calculators"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link active" : "sidebar-link"
+          }
+        >
+          <span aria-hidden="true">▣</span>
           Calculators
-        </div>
+        </NavLink>
 
         <div className="sidebar-link disabled">
           <span>⚙</span>
