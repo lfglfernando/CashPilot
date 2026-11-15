@@ -430,6 +430,3 @@ FodyWeavers.xsd
 node_modules/
 dist/
 .env
-
-# Local tools
-.tools/
