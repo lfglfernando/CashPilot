@@ -1,4 +1,5 @@
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import ExportReportButton from "../components/dashboard/ExportReportButton";
 import styles from "./Dashboard.module.scss";
 
 function Dashboard() {
@@ -80,6 +81,8 @@ function Dashboard() {
               <p>A breakdown of your business financial performance.</p>
             </div>
           </div>
+
+          <ExportReportButton />
 
           <div className={styles.table}>
             <div className="row heading">
