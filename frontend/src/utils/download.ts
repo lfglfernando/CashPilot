@@ -1,4 +1,4 @@
-/** Saves a Blob as a file in the browser by clicking a temporary link. */
+// downloads a file in the browser by clicking a hidden link
 export function downloadBlob(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -7,6 +7,5 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  // Give the browser a moment to start the download before releasing the URL.
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }

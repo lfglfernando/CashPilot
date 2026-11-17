@@ -1,16 +1,13 @@
-// Sample data used until the dashboard is connected to the backend.
-// The shape mirrors what GET /transaction/all returns, so swapping in the
-// real API later only means replacing where this array comes from.
+// Fake data for now until the dashboard is connected to the backend.
+// It's shaped like what GET /transaction/all returns so it's easy to swap later.
 
 export type TransactionType = "Income" | "Expense";
 
 export type ReportTransaction = {
   id: number;
-  /** ISO local date-time, e.g. "2026-11-06T13:05:33" */
-  time: string;
+  time: string; // like "2026-11-06T13:05:33"
   type: TransactionType;
-  /** Category name, or null when the transaction has no category. */
-  category: string | null;
+  category: string | null; // null if there is no category
   description: string;
   amount: number;
 };

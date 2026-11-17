@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { sampleTransactions } from "../../data/sampleTransactions";
-import { formatMoney } from "../../utils/currency";
 import { exportReportCsv } from "../../utils/exportCsv";
 import { exportReportPdf } from "../../utils/exportPdf";
 import {
@@ -12,7 +11,7 @@ import styles from "./ExportReportButton.module.scss";
 const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 function ExportReportButton() {
-  // Until the dashboard is connected to the backend, reports use sample data.
+  // using sample data until the dashboard is connected to the backend
   const transactions = sampleTransactions;
   const [month, setMonth] = useState(
     () => getAvailableMonths(transactions)[0] ?? "",
@@ -77,25 +76,6 @@ function ExportReportButton() {
           </button>
         </div>
       </div>
-
-      {report && hasData && (
-        <dl className={styles.preview}>
-          <div>
-            <dt>Total income</dt>
-            <dd>{formatMoney(report.totalIncome)}</dd>
-          </div>
-          <div>
-            <dt>Total expenses</dt>
-            <dd>{formatMoney(report.totalExpenses)}</dd>
-          </div>
-          <div>
-            <dt>Net profit</dt>
-            <dd className={report.netProfit < 0 ? styles.loss : styles.gain}>
-              {formatMoney(report.netProfit)}
-            </dd>
-          </div>
-        </dl>
-      )}
 
       <p className={styles.status} role="status" aria-live="polite">
         {!validMonth && "Choose a month to export."}

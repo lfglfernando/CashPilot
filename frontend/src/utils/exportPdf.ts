@@ -10,18 +10,15 @@ function monthLabel(month: string): string {
   });
 }
 
-// jspdf-autotable stores the last table it drew on the document at runtime,
-// but its typings don't declare it, so read it through a narrow cast.
+// finds where the last table ended so the next one starts below it
+// (jspdf-autotable adds lastAutoTable but TypeScript doesn't know about it)
 function nextTableY(doc: object, gap = 10): number {
   const last = (doc as { lastAutoTable?: { finalY?: number } }).lastAutoTable;
   return (last?.finalY ?? 36) + gap;
 }
 
-/**
- * Builds and downloads the PDF version of a monthly report.
- * jsPDF is loaded on demand so it stays out of the main bundle.
- */
 export async function exportReportPdf(report: MonthlyReport): Promise<void> {
+  // jsPDF is big so it only loads when you click Export PDF
   const [{ jsPDF }, { autoTable }] = await Promise.all([
     import("jspdf"),
     import("jspdf-autotable"),
@@ -56,17 +53,6 @@ export async function exportReportPdf(report: MonthlyReport): Promise<void> {
       }
     },
   });
-
-  if (report.expensesByCategory.length > 0) {
-    autoTable(doc, {
-      startY: nextTableY(doc),
-      head: [["Expenses by Category", "Amount"]],
-      body: report.expensesByCategory.map((c) => [c.category, formatMoney(c.total)]),
-      theme: "striped",
-      headStyles: { fillColor: blue },
-      columnStyles: { 1: { halign: "right" } },
-    });
-  }
 
   autoTable(doc, {
     startY: nextTableY(doc),

@@ -84,40 +84,6 @@
   }
 }
 
-.preview {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
-
-  & > div {
-    padding: 12px 14px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background: #f8fafc;
-  }
-
-  & dt {
-    font-size: 12px;
-    color: #64748b;
-  }
-
-  & dd {
-    margin: 4px 0 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: #172554;
-  }
-}
-
-.gain {
-  color: #15803d;
-}
-
-.loss {
-  color: #b91c1c;
-}
-
 .status {
   margin: 0;
   min-height: 1em;
@@ -136,10 +102,6 @@
 }
 
 @media (max-width: 600px) {
-  .preview {
-    grid-template-columns: 1fr;
-  }
-
   .buttons button {
     flex: 1;
   }

@@ -1,12 +1,10 @@
-// Single place that decides which currency reports use.
-// The team has not settled on GH₵ vs USD yet (main shows GH₵, PR #8 uses USD),
-// so everything that shows or exports money reads from here.
-// Switching later means changing REPORT_CURRENCY (or wiring it to a setting).
+// The team hasn't decided between GH₵ and USD yet, so the currency is set
+// in one place. Change REPORT_CURRENCY here to switch it.
 export type ReportCurrency = "USD" | "GHS";
 
 export const REPORT_CURRENCY: ReportCurrency = "USD";
 
-/** Formats an amount for display, e.g. 1234.5 -> "$1,234.50". */
+// turns 1234.5 into "$1,234.50"
 export function formatMoney(
   amount: number,
   currency: ReportCurrency = REPORT_CURRENCY,
