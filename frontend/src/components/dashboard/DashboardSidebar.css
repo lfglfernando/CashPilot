@@ -180,3 +180,50 @@
     display: none;
   }
 }
+
+/* Profile Photo */
+.profile-avatar-image {
+  object-fit: cover;
+  border: 2px solid #60a5fa;
+}
+
+/* Logout Button */
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-logout span {
+  font-size: 18px;
+}
+
+.sidebar-logout:hover {
+  background: #991b1b;
+  border-color: #991b1b;
+  color: white;
+}
+
+@media (max-width: 480px) {
+  .sidebar-logout {
+    justify-content: center;
+    padding: 12px 5px;
+    font-size: 0;
+  }
+
+  .sidebar-logout span {
+    font-size: 20px;
+  }
+}

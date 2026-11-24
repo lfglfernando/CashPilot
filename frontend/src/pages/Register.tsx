@@ -1,8 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Register.module.scss";
+import API_BASE_URL from "../services/api";
 
 function Register() {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
@@ -14,63 +17,102 @@ function Register() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setMessage("");
+ async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  setError("");
+  setMessage("");
 
-    if (
-      !fullName.trim() ||
-      !email.trim() ||
-      !confirmEmail.trim() ||
-      !password ||
-      !confirmPassword
-    ) {
-      setError("Please complete all required fields.");
-      return;
-    }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    if (email.toLowerCase() !== confirmEmail.toLowerCase()) {
-      setError("The email addresses do not match.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Your password must contain at least 6 characters.");
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      setError("Your password must contain at least one uppercase letter.");
-      return;
-    }
-
-    if (!/[^A-Za-z0-9]/.test(password)) {
-      setError("Your password must contain at least one special character.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("The passwords do not match.");
-      return;
-    }
-
-    if (!acceptedTerms) {
-      setError("Please accept the Terms and Conditions to continue.");
-      return;
-    }
-
-    setMessage(
-      "Your registration form is working! Account creation will be connected to the backend soon."
-    );
+  if (
+    !fullName.trim() ||
+    !email.trim() ||
+    !confirmEmail.trim() ||
+    !password ||
+    !confirmPassword
+  ) {
+    setError("Please complete all required fields.");
+    return;
   }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+console.log("EMAIL DIGITADO:", JSON.stringify(email));
+console.log("EMAIL TRIMMED:", JSON.stringify(email.trim()));
+console.log("EMAIL É VÁLIDO:", emailPattern.test(email.trim()));
+
+  if (!emailPattern.test(email.trim())) {
+    setError("Please enter a valid email address.");
+    return;
+  }
+
+  if (email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase()) {
+    setError("The email addresses do not match.");
+    return;
+  }
+
+  if (password.length < 8) {
+    setError("Your password must contain at least 8 characters.");
+    return;
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    setError("Your password must contain at least one uppercase letter.");
+    return;
+  }
+
+  if (!/[a-z]/.test(password)) {
+    setError("Your password must contain at least one lowercase letter.");
+    return;
+  }
+
+  if (!/[0-9]/.test(password)) {
+    setError("Your password must contain at least one number.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("The passwords do not match.");
+    return;
+  }
+
+  if (!acceptedTerms) {
+    setError("Please accept the Terms and Conditions to continue.");
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register-custom`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed.");
+    }
+
+    navigate("/login", {
+      state: { registrationSuccess: true },
+    });
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Unable to create your account. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
   return (
     <main className={styles.registerPage}>
@@ -173,7 +215,7 @@ function Register() {
                 </button>
               </div>
               <p className={styles.passwordHint}>
-                At least 6 characters, one uppercase letter, and one special
+                At least 8 characters, one uppercase letter, one lowercase letter, and one number.
                 character.
               </p>
             </div>
@@ -227,10 +269,13 @@ function Register() {
                 {message}
               </div>
             )}
-
-            <button type="submit" className={styles.registerButton}>
-              Create Account
-            </button>
+	<button
+  		type="submit"
+  		className={styles.registerButton}
+ 		 disabled={isSubmitting}
+	>
+ 		 {isSubmitting ? "Creating Account..." : "Create Account"}
+	</button>
           </form>
 
           <div className={styles.loginLink}>
