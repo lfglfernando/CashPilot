@@ -12,6 +12,8 @@ function Login() {
   const registrationSuccess = (location.state as { registrationSuccess?: boolean } | null )?.registrationSuccess;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
@@ -48,19 +50,33 @@ function Login() {
       body: JSON.stringify({
         email: email.trim(),
         password: password,
+        twoFactorCode: requiresTwoFactor ? twoFactorCode : undefined,
       }),
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(
-        data.detail ||
-        data.title ||
-        data.message ||
-        "Invalid email or password. Please try again."
-      );
-    }
+   if (!response.ok) {
+  const errorDetails = JSON.stringify(data).toLowerCase();
+
+  if (
+    response.status === 401 &&
+    errorDetails.includes("requirestwofactor")
+  ) {
+    setRequiresTwoFactor(true);
+    setMessage(
+      "Two-factor authentication is enabled. Enter the code from your authenticator app."
+    );
+    return;
+  }
+
+  throw new Error(
+    data.detail ||
+    data.title ||
+    data.message ||
+    "Invalid email or password. Please try again."
+  );
+}
 
     if (!data.accessToken) {
       throw new Error("Authentication token was not returned by the server.");
@@ -139,15 +155,12 @@ function Login() {
             <div className={styles.formGroup}>
               <div className={styles.passwordLabel}>
                 <label htmlFor="password">Password</label>
-                <button
-                  type="button"
-                  className={styles.forgotPassword}
-                  onClick={() =>
-                    setMessage("Password recovery will be available soon.")
-                  }
-                >
-                  Forgot Password?
-                </button>
+                <Link
+                    to="/forgot-password"
+                    className={styles.forgotPassword}
+                  >
+                    Forgot Password?
+                  </Link>
               </div>
 
               <div className={styles.passwordInput}>
@@ -170,6 +183,26 @@ function Login() {
                 </button>
               </div>
             </div>
+                        {requiresTwoFactor && (
+              <div className={styles.formGroup}>
+                <label htmlFor="twoFactorCode">
+                  Authenticator Code
+                </label>
+
+                <input
+                  id="twoFactorCode"
+                  type="text"
+                  placeholder="Enter your 6-digit code"
+                  value={twoFactorCode}
+                  onChange={(event) =>
+                    setTwoFactorCode(event.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  maxLength={6}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                />
+              </div>
+            )}
 
             <label className={styles.rememberMe}>
               <input
