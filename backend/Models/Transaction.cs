@@ -13,7 +13,7 @@ namespace CashPilot.Models
         public int? CategoryId { get; set; }
         public TransactionCategory? Category { get; set; }
         public string? Description { get; set; }
-        public double? Amount { get; set; }
+        public decimal? Amount { get; set; }
         public static void MapRoutes(ref WebApplication app)
         {
             app.MapGet("/transaction/{id}", async (CashPilotContext db, long id) => await db.Transactions.FindAsync(id));

@@ -1,8 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using CashPilot.Data;
 using CashPilot.Models;
+using CashPilot.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
+//The CORS policy registration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddEndpointsApiExplorer();
@@ -34,11 +45,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//CORS policy middleware activation
+app.UseCors("FrontendPolicy");
+
+
 // Api Stuff Below
 
 // Transactions
 TransactionCategory.MapRoutes(ref app);
 Transaction.MapRoutes(ref app);
+
+//Dashboard Api Endpoint Route registration
+DashboardEndpoints.MapRoutes(app);
 
 // Api Stuff Above
 
