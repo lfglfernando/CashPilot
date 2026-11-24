@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProductProfit from "./pages/ProductProfit";
 import Profile from "./pages/Profile";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/calculators/product-profit" element={<ProductProfit />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>

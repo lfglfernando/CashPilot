@@ -17,7 +17,7 @@ function Dashboard() {
           </div>
 
           <div className={styles.period}>
-            <span>Financial Overview</span>
+            <span>Financial Overview (USD)</span>
           </div>
         </header>
 
@@ -27,21 +27,21 @@ function Dashboard() {
           <div className={`${styles.card} ${styles.revenue}`}>
             <div className="icon">↗</div>
             <div className="label">Total Revenue</div>
-            <h2 className="amount">GH₵ 0.00</h2>
+            <h2 className="amount">$0.00</h2>
             <p>Money received</p>
           </div>
 
           <div className={`${styles.card} ${styles.expense}`}>
             <div className="icon">↙</div>
             <div className="label">Total Expenses</div>
-            <h2 className="amount">GH₵ 0.00</h2>
+            <h2 className="amount">$0.00</h2>
             <p>Money spent</p>
           </div>
 
           <div className={`${styles.card} ${styles.profit}`}>
-            <div className="icon">₵</div>
+            <div className="icon">$</div>
             <div className="label">Net Profit</div>
-            <h2 className="amount">GH₵ 0.00</h2>
+            <h2 className="amount">$0.00</h2>
             <p>Revenue minus expenses</p>
           </div>
 
@@ -87,7 +87,7 @@ function Dashboard() {
           <div className={styles.table}>
             <div className="row heading">
               <span>Financial Summary</span>
-              <span>Amount (GH₵)</span>
+              <span>Amount (USD)</span>
             </div>
 
             <div className="row">

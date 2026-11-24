@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using CashPilot.Data;
 using CashPilot.Models;
+using CashPilot.Calculators;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -51,6 +52,14 @@ builder.Services.AddCors(options =>
 
 // OpenAPI
 builder.Services.AddOpenApi();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ProductProfit", policy =>
+    {
+        var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+        policy.WithOrigins(origins).WithMethods("POST").WithHeaders("Content-Type");
+    });
+});
 
 var app = builder.Build();
 
@@ -61,6 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 
 app.UseCors("CashPilotFrontend");
 app.UseAuthentication();
@@ -181,6 +191,8 @@ app.MapPut("/profile/me/photo", async (
 // Transactions
 TransactionCategory.MapRoutes(ref app);
 Transaction.MapRoutes(ref app);
+
+app.MapProductProfitCalculator();
 
 // Api Stuff Above
 
