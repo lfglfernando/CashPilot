@@ -1,37 +1,86 @@
 
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Login.module.scss";
+import API_BASE_URL from "../services/api";
 
 function Login() {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const location = useLocation();
+
+  const registrationSuccess = (location.state as { registrationSuccess?: boolean } | null )?.registrationSuccess;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(
+  registrationSuccess
+    ? "Your account was created successfully! Please log in."
+    : ""
+);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
 
-    setError("");
-    setMessage("");
+  setError("");
+  setMessage("");
 
-    if (!email.trim() || !password) {
-      setError("Please enter your email address and password.");
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    // Backend authentication will be connected in a later step.
-    setError(
-  "Invalid email or password. Please check your credentials and try again."
-    );
+  if (!email.trim() || !password) {
+    setError("Please enter your email address and password.");
+    return;
   }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    setError("Please enter a valid email address.");
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.detail ||
+        data.title ||
+        data.message ||
+        "Invalid email or password. Please try again."
+      );
+    }
+
+    if (!data.accessToken) {
+      throw new Error("Authentication token was not returned by the server.");
+    }
+
+    const storage = rememberMe ? localStorage : sessionStorage;
+
+   storage.setItem("cashPilotToken", data.accessToken);
+
+    navigate("/dashboard");
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Unable to log in. Please try again."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
   return (
     <main className={styles.loginPage}>
@@ -143,9 +192,9 @@ function Login() {
               </div>
             )}
 
-            <button type="submit" className={styles.loginButton}>
-              Log In
-            </button>
+            <button   type="submit"   			className={styles.loginButton} disabled={isSubmitting}>
+	  {isSubmitting ? "Logging In..." : "Log In"}
+	</button>
           </form>
 
           <div className={styles.registerLink}>

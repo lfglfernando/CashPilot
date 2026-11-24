@@ -3,83 +3,145 @@ using Microsoft.EntityFrameworkCore;
 using CashPilot.Data;
 
 namespace CashPilot.Models
-{
+{   
     public class Transaction
     {
         [Key]
         public long? Id { get; set; }
         public DateTime? Time { get; set; }
-        public string? Type { get; set; } // "Income" or "Expense"
+        public string? Type { get; set; }
         public int? CategoryId { get; set; }
         public TransactionCategory? Category { get; set; }
+        public string? UserId { get; set; }
+        public ApplicationUser? User { get; set; }
         public string? Description { get; set; }
         public double? Amount { get; set; }
+
         public static void MapRoutes(ref WebApplication app)
         {
-            app.MapGet("/transaction/{id}", async (CashPilotContext db, long id) => await db.Transactions.FindAsync(id));
-            app.MapGet("/transaction/all", async (CashPilotContext db) =>
+            // GET: Get one transaction belonging to the authenticated user
+            app.MapGet("/transaction/{id}", async (
+                CashPilotContext db,
+                long id,
+                System.Security.Claims.ClaimsPrincipal user) =>
             {
-                var transactions = await db.Transactions.ToListAsync();
-                var categories = await db.TransactionCategories.ToListAsync();
-                var query = transactions
-                    .GroupJoin(
-                        categories,
-                        transaction => transaction.CategoryId,
-                        category => category.Id,
-                        (transaction, categoryList) => new { transaction, subgroup = categoryList })
-                    .SelectMany(
-                        joinedSet => joinedSet.subgroup.DefaultIfEmpty(),
-                        (t, c) => new
-                        {
-                            id = t.transaction.Id,
-                            time = t.transaction.Time,
-                            type = t.transaction.Type,
-                            categoryId = c?.Id,
-                            category = c?.Category,
-                            description = t.transaction.Description,
-                            amount = t.transaction.Amount
-                        });
-                return query;
-            });
-            app.MapPost("/transaction/new", async (CashPilotContext db, Transaction transaction) =>
+                var userId = user.FindFirst(
+                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                var transaction = await db.Transactions
+                    .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+                return transaction is null
+                    ? Results.NotFound()
+                    : Results.Ok(transaction);
+            }).RequireAuthorization();
+
+            // GET: Get all transactions belonging to the authenticated user
+            app.MapGet("/transaction/all", async (
+                CashPilotContext db,
+                System.Security.Claims.ClaimsPrincipal user) =>
             {
+                var userId = user.FindFirst(
+                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                var transactions = await db.Transactions
+                    .Where(t => t.UserId == userId)
+                    .Select(t => new
+                    {
+                        id = t.Id,
+                        time = t.Time,
+                        type = t.Type,
+                        categoryId = t.CategoryId,
+                        category = t.Category != null ? t.Category.Category : null,
+                        description = t.Description,
+                        amount = t.Amount
+                    })
+                    .ToListAsync();
+
+                return Results.Ok(transactions);
+            }).RequireAuthorization();
+
+            // POST: Create a transaction for the authenticated user
+            app.MapPost("/transaction/new", async (
+                CashPilotContext db,
+                Transaction transaction,
+                System.Security.Claims.ClaimsPrincipal user) =>
+            {
+                var userId = user.FindFirst(
+                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
                 bool required =
                     transaction.Time is not null &&
                     (transaction.Type == "Income" || transaction.Type == "Expense") &&
-                    transaction.Amount is not null;
-                
-                if (required)
-                {
-                    await db.Transactions.AddAsync(transaction);
-                    await db.SaveChangesAsync();
-                    return Results.Created();
-                }
-                else
+                    transaction.Amount is not null &&
+                    userId is not null;
+
+                if (!required)
                     return Results.BadRequest();
-            });
-            app.MapPut("/transaction/{id}", async (CashPilotContext db, Transaction update, long id) =>
+
+                transaction.Id = null;
+                transaction.UserId = userId;
+                transaction.User = null;
+                transaction.Category = null;
+
+                await db.Transactions.AddAsync(transaction);
+                await db.SaveChangesAsync();
+
+                return Results.Created($"/transaction/{transaction.Id}", transaction);
+            }).RequireAuthorization();
+
+            // PUT: Update only a transaction belonging to the authenticated user
+            app.MapPut("/transaction/{id}", async (
+                CashPilotContext db,
+                Transaction update,
+                long id,
+                System.Security.Claims.ClaimsPrincipal user) =>
             {
-                var transaction = await db.Transactions.FindAsync(id);
+                var userId = user.FindFirst(
+                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                var transaction = await db.Transactions
+                    .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
                 if (transaction is null)
                     return Results.NotFound();
+
+                if (update.Type is not null &&
+                    update.Type != "Income" &&
+                    update.Type != "Expense")
+                    return Results.BadRequest();
+
                 transaction.Time = update.Time ?? transaction.Time;
                 transaction.Type = update.Type ?? transaction.Type;
                 transaction.CategoryId = update.CategoryId ?? transaction.CategoryId;
-                transaction.Category = update.Category ?? transaction.Category;
                 transaction.Description = update.Description ?? transaction.Description;
                 transaction.Amount = update.Amount ?? transaction.Amount;
+
                 await db.SaveChangesAsync();
+
                 return Results.NoContent();
-            });
-            app.MapDelete("/transaction/{id}", async (CashPilotContext db, long id) =>
+            }).RequireAuthorization();
+
+            // DELETE: Delete only a transaction belonging to the authenticated user
+            app.MapDelete("/transaction/{id}", async (
+                CashPilotContext db,
+                long id,
+                System.Security.Claims.ClaimsPrincipal user) =>
             {
-                var transaction = await db.Transactions.FindAsync(id);
+                var userId = user.FindFirst(
+                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                var transaction = await db.Transactions
+                    .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
                 if (transaction is null)
                     return Results.NotFound();
+
                 db.Transactions.Remove(transaction);
                 await db.SaveChangesAsync();
+
                 return Results.NoContent();
-            });
+            }).RequireAuthorization();
         }
     }
 
