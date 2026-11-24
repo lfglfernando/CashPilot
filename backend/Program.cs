@@ -12,12 +12,28 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddDbContext<CashPilotContext>(options =>
         options.UseSqlite(connectionString)
     );
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: "AllowSpecificOrigin",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:5173");
+            });
+    });
 }
 else if (builder.Environment.IsProduction())
 {
     builder.Services.AddDbContext<CashPilotContext>(options =>
         options.UseNpgsql(connectionString)
     );
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: "AllowSpecificOrigin",
+            policy =>
+            {
+                policy.WithOrigins("https://cashpilot-ua1w.onrender.com");
+            });
+    });
 }
 
 // Add services to the container.
@@ -46,5 +62,7 @@ if (app.Environment.IsDevelopment())
 {
     await SeedData.InitDb(app.Services);
 }
+
+app.UseCors("AllowSpecificOrigin"); // must be after routing and before auth
 
 app.Run();

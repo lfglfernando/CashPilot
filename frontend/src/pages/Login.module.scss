@@ -1,0 +1,269 @@
+
+.loginPage {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f5f7fb;
+}
+
+.welcomeSection {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  color: white;
+  padding: 55px 9%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo {
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.welcomeContent {
+  max-width: 540px;
+  margin: 70px auto;
+  width: 100%;
+
+  h1 {
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.2;
+    margin: 20px 0;
+  }
+
+  p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #dbeafe;
+  }
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #bfdbfe;
+}
+
+.benefits {
+  display: grid;
+  gap: 18px;
+  margin-top: 35px;
+  font-size: 15px;
+}
+
+.footerText {
+  font-size: 12px;
+  color: #dbeafe;
+}
+
+.formSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  padding: 42px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
+}
+
+.cardHeading {
+  margin-bottom: 32px;
+
+  h2 {
+    color: #111827;
+    font-size: 30px;
+    margin: 0 0 10px;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.formGroup {
+  margin-bottom: 22px;
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 9px;
+  }
+
+  input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 0 14px;
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
+}
+
+.passwordLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgotPassword,
+.showPassword {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0;
+
+  &:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+  }
+}
+
+.passwordInput {
+  position: relative;
+
+  input {
+    padding-right: 65px;
+  }
+}
+
+.showPassword {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.rememberMe {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 24px;
+
+  input {
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb;
+  }
+}
+
+.loginButton {
+  width: 100%;
+  height: 49px;
+  border: none;
+  border-radius: 7px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.errorMessage,
+.successMessage {
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.errorMessage {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.successMessage {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.registerLink {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 25px;
+
+  a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.securityNote {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 22px;
+  margin-top: 28px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .loginPage {
+    grid-template-columns: 1fr;
+  }
+
+  .welcomeSection {
+    padding: 30px 8%;
+  }
+
+  .welcomeContent {
+    margin: 45px auto;
+
+    h1 {
+      font-size: 36px;
+    }
+  }
+
+  .footerText {
+    display: none;
+  }
+
+  .formSection {
+    padding: 35px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginCard {
+    padding: 28px 22px;
+  }
+
+  .cardHeading h2 {
+    font-size: 26px;
+  }
+}
