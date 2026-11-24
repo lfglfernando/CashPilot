@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProductProfit from "./pages/ProductProfit";
 import Profile from "./pages/Profile";
+import CompareProducts from "./pages/CompareProducts";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/calculators/product-profit" element={<ProductProfit />} />
+        <Route path="/products/compare" element={<CompareProducts />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
