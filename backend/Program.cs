@@ -5,6 +5,7 @@ using CashPilot.Data;
 using CashPilot.Models;
 using CashPilot.Endpoints;
 using CashPilot.Calculators;
+using CashPilot.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 //The CORS policy registration
@@ -68,7 +69,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ProductProfit", policy =>
     {
         var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
-        policy.WithOrigins(origins).WithMethods("POST").WithHeaders("Content-Type");
+        policy.WithOrigins(origins).WithMethods("POST").WithHeaders("Content-Type", "Authorization");
     });
 });
 
@@ -210,6 +211,7 @@ Transaction.MapRoutes(ref app);
 //Dashboard Api Endpoint Route registration
 DashboardEndpoints.MapRoutes(app);
 app.MapProductProfitCalculator();
+app.MapProductEndpoints();
 
 // Api Stuff Above
 

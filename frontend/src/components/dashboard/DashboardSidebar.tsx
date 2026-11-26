@@ -102,9 +102,16 @@ function DashboardSidebar() {
           <span aria-hidden="true">▣</span>
           Calculators
         </NavLink>
-        <div className="sidebar-link disabled">
-          <span>▣</span> Calculators
-        </div>
+        <NavLink
+          to="/products/compare"
+          title="Compare Products"
+          className={({ isActive }) =>
+            isActive ? "sidebar-link active" : "sidebar-link"
+          }
+        >
+          <span aria-hidden="true">⇆</span>
+          Compare Products
+        </NavLink>
 
         <NavLink
           to="/profile"

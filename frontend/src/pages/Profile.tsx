@@ -1,8 +1,7 @@
 
 import { useEffect, useState, type ChangeEvent } from "react";
-import { Link } from "react-router-dom";
 import API_BASE_URL from "../services/api";
-import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import DashboardPage from "../components/dashboard/DashboardPage";
 import styles from "./Profile.module.scss";
 
 interface UserProfile {
@@ -118,23 +117,13 @@ function Profile() {
   }
 
   return (
-    <div className={styles.layout}>
-      <DashboardSidebar />
-
-      <main className={styles.profilePage}>
-        <header className={styles.header}>
-          <div>
-            <h1>My Profile</h1>
-            <p>Manage your personal information and account photo.</p>
-          </div>
-          <Link to="/dashboard" className={styles.backLink}>
-            Back to Dashboard
-          </Link>
-        </header>
+    <DashboardPage
+      title="My Profile"
+      description="Manage your personal information and account photo."
+      error={error}
+    >
 
         {loading && <p>Loading your profile...</p>}
-
-        {error && <div className={styles.error}>{error}</div>}
 
         {profile && !loading && (
           <section className={styles.profileCard}>
@@ -192,8 +181,7 @@ function Profile() {
             </div>
           </section>
         )}
-      </main>
-    </div>
+    </DashboardPage>
   );
 }
 

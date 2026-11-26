@@ -1,4 +1,6 @@
 @CashPilot_HostAddress = http://localhost:5241
+# Paste the accessToken returned by POST /auth/login.
+@CashPilot_AccessToken =
 
 GET {{CashPilot_HostAddress}}/transaction/all
 Accept: application/json
@@ -7,6 +9,7 @@ Accept: application/json
 
 # Profit: 40 per unit, 40% margin.
 POST {{CashPilot_HostAddress}}/api/calculators/product-profit
+Authorization: Bearer {{CashPilot_AccessToken}}
 Content-Type: application/json
 
 {
@@ -18,6 +21,7 @@ Content-Type: application/json
 
 # Loss: -25 per unit, -50% margin.
 POST {{CashPilot_HostAddress}}/api/calculators/product-profit
+Authorization: Bearer {{CashPilot_AccessToken}}
 Content-Type: application/json
 
 {
@@ -29,6 +33,7 @@ Content-Type: application/json
 
 # Zero cost: 19.99 profit, 100% margin.
 POST {{CashPilot_HostAddress}}/api/calculators/product-profit
+Authorization: Bearer {{CashPilot_AccessToken}}
 Content-Type: application/json
 
 {
@@ -40,6 +45,7 @@ Content-Type: application/json
 
 # Invalid price and cost: expect 400.
 POST {{CashPilot_HostAddress}}/api/calculators/product-profit
+Authorization: Bearer {{CashPilot_AccessToken}}
 Content-Type: application/json
 
 {
@@ -51,6 +57,7 @@ Content-Type: application/json
 
 # Too many decimals: expect 400.
 POST {{CashPilot_HostAddress}}/api/calculators/product-profit
+Authorization: Bearer {{CashPilot_AccessToken}}
 Content-Type: application/json
 
 {
@@ -62,6 +69,7 @@ Content-Type: application/json
 
 # Missing price and cost: expect 400.
 POST {{CashPilot_HostAddress}}/api/calculators/product-profit
+Authorization: Bearer {{CashPilot_AccessToken}}
 Content-Type: application/json
 
 {}

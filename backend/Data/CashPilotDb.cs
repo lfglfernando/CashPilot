@@ -15,5 +15,7 @@ namespace CashPilot.Data
         public DbSet<Transaction> Transactions { get; set; } = null!;
 
         public DbSet<TransactionCategory> TransactionCategories { get; set; } = null!;
+
+        public DbSet<Product> Products { get; set; } = null!;
     }
 }

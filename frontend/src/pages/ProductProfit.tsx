@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import DashboardPage from "../components/dashboard/DashboardPage";
 import {
   calculateProductProfit,
+  checkCalculatorSession,
   ProfitCalculationError,
   type ProfitErrors,
   type ProfitResult,
@@ -37,11 +38,28 @@ function ProductProfit() {
   const [errorMessage, setErrorMessage] = useState("");
   const [result, setResult] = useState<ProfitResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [sessionError, setSessionError] = useState("");
   const sellingPriceInput = useRef<HTMLInputElement>(null);
   const costPriceInput = useRef<HTMLInputElement>(null);
   const request = useRef<AbortController | null>(null);
 
   useEffect(() => () => request.current?.abort(), []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    checkCalculatorSession(controller.signal)
+      .then(() => { if (!controller.signal.aborted) setSessionReady(true); })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setSessionError(error instanceof ProfitCalculationError
+            ? error.message : "Unable to verify your session. Please reload the page.");
+        }
+      })
+      .finally(() => { if (!controller.signal.aborted) setCheckingSession(false); });
+    return () => controller.abort();
+  }, []);
 
   function updateAmount(field: "sellingPrice" | "costPrice", value: string) {
     if (field === "sellingPrice") setSellingPrice(value);
@@ -53,7 +71,7 @@ function ProductProfit() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (isCalculating) return;
+    if (isCalculating || !sessionReady) return;
 
     const nextErrors = {
       sellingPrice: validateAmount(sellingPrice, true),
@@ -79,6 +97,11 @@ function ProductProfit() {
     } catch (error) {
       if (controller.signal.aborted) return;
       if (error instanceof ProfitCalculationError) {
+        if (error.status === 401) {
+          setSessionReady(false);
+          setSessionError(error.message);
+          return;
+        }
         setErrors(error.fieldErrors);
         setErrorMessage(error.message);
       } else {
@@ -103,15 +126,16 @@ function ProductProfit() {
     : null;
 
   return (
-    <div className={styles.layout}>
-      <DashboardSidebar />
-      <main className={styles.page}>
-        <header className={styles.header}>
-          <p className={styles.eyebrow}>CALCULATORS</p>
-          <h1>Product Profit Calculator</h1>
-          <p>See what you earn on every product you sell.</p>
-        </header>
-
+    <DashboardPage
+      title="Product Profit Calculator"
+      description="See what you earn on every product you sell."
+      className={styles.page}
+      error={sessionError}
+      action={!sessionReady ? { label: "Log in", to: "/login" } : undefined}
+    >
+      {checkingSession && <p role="status">Loading your calculator...</p>}
+      {sessionReady && (
+        <>
         <div className={styles.columns}>
           <section className={styles.panel} aria-labelledby="product-details-title">
             <h2 id="product-details-title">Product details</h2>
@@ -210,8 +234,9 @@ function ProductProfit() {
           <p><strong>Profit margin</strong> = (profit per unit ÷ selling price) × 100</p>
           <p className={styles.hint}>Margin is the percentage of the selling price you keep after the costs entered above.</p>
         </section>
-      </main>
-    </div>
+        </>
+      )}
+    </DashboardPage>
   );
 }
 

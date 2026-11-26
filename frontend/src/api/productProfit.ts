@@ -1,3 +1,5 @@
+import API_BASE_URL from "../services/api";
+
 export type ProfitInputs = {
   sellingPrice: number;
   costPrice: number;
@@ -12,14 +14,34 @@ export type ProfitErrors = Partial<Record<keyof ProfitInputs, string>>;
 
 export class ProfitCalculationError extends Error {
   fieldErrors: ProfitErrors;
+  status: number;
 
-  constructor(message: string, fieldErrors: ProfitErrors = {}) {
+  constructor(message: string, fieldErrors: ProfitErrors = {}, status = 0) {
     super(message);
     this.fieldErrors = fieldErrors;
+    this.status = status;
   }
 }
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
+const sessionApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || API_BASE_URL).replace(/\/+$/, "");
+
+function getToken(): string {
+  const token = localStorage.getItem("cashPilotToken") || sessionStorage.getItem("cashPilotToken");
+  if (!token) throw new ProfitCalculationError("Please log in to use the calculator.", {}, 401);
+  return token;
+}
+
+export async function checkCalculatorSession(signal: AbortSignal): Promise<void> {
+  const response = await fetch(`${sessionApiBaseUrl}/profile/me`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+    signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]),
+  });
+  if (response.status === 401) {
+    throw new ProfitCalculationError("Your session has expired. Please log in again.", {}, 401);
+  }
+  if (!response.ok) throw new ProfitCalculationError("Unable to verify your session. Please reload the page.");
+}
 
 export async function calculateProductProfit(
   inputs: ProfitInputs,
@@ -27,7 +49,7 @@ export async function calculateProductProfit(
 ): Promise<ProfitResult> {
   const response = await fetch(`${apiBaseUrl}/api/calculators/product-profit`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
     body: JSON.stringify(inputs),
     signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]),
   });
@@ -35,6 +57,9 @@ export async function calculateProductProfit(
   const data: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new ProfitCalculationError("Your session has expired. Please log in again.", {}, 401);
+    }
     const fieldErrors: ProfitErrors = {};
     if (response.status === 400 && data && typeof data === "object" && "errors" in data) {
       const errors = data.errors;

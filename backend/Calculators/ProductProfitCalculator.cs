@@ -10,6 +10,7 @@ public static class ProductProfitCalculator
     public static void MapProductProfitCalculator(this WebApplication app)
     {
         app.MapPost("/api/calculators/product-profit", Calculate)
+            .RequireAuthorization()
             .RequireCors("ProductProfit")
             .WithName("CalculateProductProfit")
             .WithTags("Calculators")
@@ -18,21 +19,30 @@ public static class ProductProfitCalculator
 
     private static Results<Ok<ProductProfitResponse>, ValidationProblem> Calculate(ProductProfitRequest request)
     {
-        var errors = new Dictionary<string, string[]>();
-        ValidatePrice(request.SellingPrice, "sellingPrice", "Selling price", 0.01m, errors);
-        ValidatePrice(request.CostPrice, "costPrice", "Cost price", 0m, errors);
+        var errors = ValidatePrices(request.SellingPrice, request.CostPrice);
 
         if (errors.Count > 0)
         {
             return TypedResults.ValidationProblem(errors);
         }
 
-        var sellingPrice = request.SellingPrice!.Value;
-        var costPrice = request.CostPrice!.Value;
+        return TypedResults.Ok(GetResult(request.SellingPrice!.Value, request.CostPrice!.Value));
+    }
+
+    internal static Dictionary<string, string[]> ValidatePrices(decimal? sellingPrice, decimal? costPrice)
+    {
+        var errors = new Dictionary<string, string[]>();
+        ValidatePrice(sellingPrice, "sellingPrice", "Selling price", 0.01m, errors);
+        ValidatePrice(costPrice, "costPrice", "Cost price", 0m, errors);
+        return errors;
+    }
+
+    internal static ProductProfitResponse GetResult(decimal sellingPrice, decimal costPrice)
+    {
         var profitPerUnit = sellingPrice - costPrice;
         var profitMarginPercent = decimal.Round(profitPerUnit / sellingPrice * 100m, 2, MidpointRounding.AwayFromZero);
 
-        return TypedResults.Ok(new ProductProfitResponse(sellingPrice, costPrice, profitPerUnit, profitMarginPercent));
+        return new ProductProfitResponse(sellingPrice, costPrice, profitPerUnit, profitMarginPercent);
     }
 
     private static void ValidatePrice(
