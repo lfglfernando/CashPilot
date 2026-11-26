@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import API_BASE_URL from "../services/api";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import styles from "./Profile.module.scss";
+import AuthenticatorSetup from "./AuthenticatorSetup";
 
 interface UserProfile {
   fullName: string;
@@ -11,13 +12,16 @@ interface UserProfile {
   phoneNumber: string | null;
   recoveryEmail: string | null;
   profilePhoto: string | null;
+  twoFactorEnabled: boolean;
 }
 
 function Profile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [savingPhoto, setSavingPhoto] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     async function loadProfile() {
@@ -56,6 +60,63 @@ function Profile() {
     loadProfile();
   }, []);
 
+  function updateProfileField(
+    field: "fullName" | "phoneNumber" | "recoveryEmail",
+    value: string
+  ) {
+    setProfile((current) =>
+      current ? { ...current, [field]: value } : current
+    );
+    setSuccess("");
+    setError("");
+  }
+
+  async function handleSaveProfile() {
+    if (!profile) return;
+
+    const token =
+      localStorage.getItem("cashPilotToken") ||
+      sessionStorage.getItem("cashPilotToken");
+
+    if (!token) {
+      setError("Please log in again.");
+      return;
+    }
+
+    setSavingProfile(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/profile/me`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          fullName: profile.fullName,
+          phoneNumber: profile.phoneNumber,
+          recoveryEmail: profile.recoveryEmail,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to update your profile.");
+      }
+
+      setSuccess("Profile updated successfully!");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Unable to update your profile."
+      );
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
   async function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
@@ -87,6 +148,7 @@ function Profile() {
 
       setSavingPhoto(true);
       setError("");
+      setSuccess("");
 
       try {
         const response = await fetch(`${API_BASE_URL}/profile/me/photo`, {
@@ -105,6 +167,8 @@ function Profile() {
         setProfile((current) =>
           current ? { ...current, profilePhoto: photo } : current
         );
+
+        setSuccess("Profile photo updated successfully!");
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Unable to save your photo."
@@ -127,6 +191,7 @@ function Profile() {
             <h1>My Profile</h1>
             <p>Manage your personal information and account photo.</p>
           </div>
+
           <Link to="/dashboard" className={styles.backLink}>
             Back to Dashboard
           </Link>
@@ -135,8 +200,10 @@ function Profile() {
         {loading && <p>Loading your profile...</p>}
 
         {error && <div className={styles.error}>{error}</div>}
+        {success && <div className={styles.success}>{success}</div>}
 
         {profile && !loading && (
+          <>
           <section className={styles.profileCard}>
             <div className={styles.photoSection}>
               {profile.profilePhoto ? (
@@ -171,8 +238,17 @@ function Profile() {
               <h2>Personal Information</h2>
 
               <div className={styles.field}>
-                <label>Full Name</label>
-                <p>{profile.fullName || "Not provided"}</p>
+                <label htmlFor="fullName">Full Name</label>
+                <input
+                  id="fullName"
+                  type="text"
+                  className={styles.input}
+                  value={profile.fullName || ""}
+                  onChange={(event) =>
+                    updateProfileField("fullName", event.target.value)
+                  }
+                  required
+                />
               </div>
 
               <div className={styles.field}>
@@ -181,17 +257,57 @@ function Profile() {
               </div>
 
               <div className={styles.field}>
-                <label>Phone Number</label>
-                <p>{profile.phoneNumber || "Not provided"}</p>
+                <label htmlFor="phoneNumber">Phone Number</label>
+                <input
+                  id="phoneNumber"
+                  type="tel"
+                  className={styles.input}
+                  value={profile.phoneNumber || ""}
+                  onChange={(event) =>
+                    updateProfileField("phoneNumber", event.target.value)
+                  }
+                  placeholder="Enter your phone number"
+                />
               </div>
 
               <div className={styles.field}>
-                <label>Recovery Email</label>
-                <p>{profile.recoveryEmail || "Not provided"}</p>
+                <label htmlFor="recoveryEmail">Recovery Email</label>
+                <input
+                  id="recoveryEmail"
+                  type="email"
+                  className={styles.input}
+                  value={profile.recoveryEmail || ""}
+                  onChange={(event) =>
+                    updateProfileField("recoveryEmail", event.target.value)
+                  }
+                  placeholder="Enter your recovery email"
+                />
               </div>
+
+              <button
+                type="button"
+                className={styles.saveButton}
+                onClick={handleSaveProfile}
+                disabled={savingProfile}
+              >
+                {savingProfile ? "Saving..." : "Save Changes"}
+              </button>
             </div>
           </section>
-        )}
+
+          <AuthenticatorSetup
+            email={profile.email}
+            enabled={profile.twoFactorEnabled}
+            onStatusChange={(enabled) =>
+              setProfile((current) =>
+                current
+                  ? { ...current, twoFactorEnabled: enabled }
+                  : current
+              )
+            }
+            />
+          </>
+        )}  
       </main>
     </div>
   );

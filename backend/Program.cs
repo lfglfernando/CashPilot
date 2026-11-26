@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using CashPilot.Data;
 using CashPilot.Models;
+using CashPilot.Services;
 using CashPilot.Endpoints;
 using CashPilot.Calculators;
 
@@ -48,6 +49,7 @@ builder.Services
     })
     .AddEntityFrameworkStores<CashPilotContext>();
 
+builder.Services.AddTransient<EmailService>();
 builder.Services.AddAuthorization();
 // Allow the React frontend to communicate with the backend
 builder.Services.AddCors(options =>
@@ -128,6 +130,120 @@ app.MapPost("/auth/register-custom", async (
 });
 
 // User Profile
+
+// Password Recovery
+app.MapPost("/auth/forgot-password", async (
+    ForgotPasswordRequest request,
+    UserManager<ApplicationUser> userManager,
+    EmailService emailService,
+    IConfiguration configuration,
+    ILogger<EmailService> logger) =>
+{
+    const string message =
+        "If an account exists with a recovery email configured, a password reset link will be sent.";
+
+    if (string.IsNullOrWhiteSpace(request.Email))
+    {
+        return Results.Ok(new { message });
+    }
+
+    var user = await userManager.FindByEmailAsync(request.Email.Trim());
+
+    if (user == null || string.IsNullOrWhiteSpace(user.RecoveryEmail))
+    {
+        return Results.Ok(new { message });
+    }
+
+    try
+    {
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+        var baseUrl = configuration["Frontend:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            throw new InvalidOperationException(
+                "Frontend base URL is not configured."
+            );
+        }
+
+        var resetUrl =
+            $"{baseUrl.TrimEnd('/')}/reset-password" +
+            $"?email={Uri.EscapeDataString(user.Email!)}" +
+            $"&token={Uri.EscapeDataString(token)}";
+
+        var safeResetUrl =
+            System.Net.WebUtility.HtmlEncode(resetUrl);
+
+        var htmlBody = $"""
+            <h2>Reset Your CashPilot Password</h2>
+            <p>We received a request to reset your password.</p>
+            <p>Click the link below to create a new password:</p>
+            <p><a href="{safeResetUrl}">Reset My Password</a></p>
+            <p>If you did not request this, you can ignore this email.</p>
+            """;
+
+        await emailService.SendEmailAsync(
+            user.RecoveryEmail,
+            "Reset Your CashPilot Password",
+            htmlBody
+        );
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Password recovery email could not be sent.");
+    }
+
+    return Results.Ok(new { message });
+});
+
+app.MapPost("/auth/reset-password", async (
+    ResetPasswordRequest request,
+    UserManager<ApplicationUser> userManager) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Email) ||
+        string.IsNullOrWhiteSpace(request.Token) ||
+        string.IsNullOrWhiteSpace(request.NewPassword))
+    {
+        return Results.BadRequest(new
+        {
+            message = "All fields are required."
+        });
+    }
+
+    var user = await userManager.FindByEmailAsync(request.Email.Trim());
+
+    if (user == null)
+    {
+        return Results.BadRequest(new
+        {
+            message = "Invalid password reset request."
+        });
+    }
+
+    var result = await userManager.ResetPasswordAsync(
+        user,
+        request.Token,
+        request.NewPassword
+    );
+
+    if (!result.Succeeded)
+    {
+        return Results.BadRequest(new
+        {
+            message = string.Join(
+                " ",
+                result.Errors.Select(error => error.Description)
+            )
+        });
+    }
+
+    return Results.Ok(new
+    {
+        message = "Your password has been reset successfully."
+    });
+});
+
 app.MapGet("/profile/me", async (
     UserManager<ApplicationUser> userManager,
     HttpContext context) =>
@@ -139,13 +255,71 @@ app.MapGet("/profile/me", async (
         return Results.Unauthorized();
     }
 
-    return Results.Ok(new
+       return Results.Ok(new
     {
         fullName = user.FullName,
         email = user.Email,
         phoneNumber = user.PhoneNumber,
         recoveryEmail = user.RecoveryEmail,
-        profilePhoto = user.ProfilePhoto
+        profilePhoto = user.ProfilePhoto,
+        twoFactorEnabled = user.TwoFactorEnabled
+    });
+}).RequireAuthorization();
+
+
+app.MapPut("/profile/me", async (
+    ProfileUpdateRequest request,
+    UserManager<ApplicationUser> userManager,
+    HttpContext context) =>
+{
+    var user = await userManager.GetUserAsync(context.User);
+
+    if (user == null)
+    {
+        return Results.Unauthorized();
+    }
+
+    if (string.IsNullOrWhiteSpace(request.FullName))
+    {
+        return Results.BadRequest(new
+        {
+            message = "Full name is required."
+        });
+    }
+
+    if (!string.IsNullOrWhiteSpace(request.RecoveryEmail) &&
+        !System.Text.RegularExpressions.Regex.IsMatch(
+            request.RecoveryEmail,
+            @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+    {
+        return Results.BadRequest(new
+        {
+            message = "Please enter a valid recovery email."
+        });
+    }
+
+    user.FullName = request.FullName.Trim();
+    user.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber)
+        ? null
+        : request.PhoneNumber.Trim();
+
+    user.RecoveryEmail = string.IsNullOrWhiteSpace(request.RecoveryEmail)
+        ? null
+        : request.RecoveryEmail.Trim();
+
+    var result = await userManager.UpdateAsync(user);
+
+    if (!result.Succeeded)
+    {
+        return Results.BadRequest(new
+        {
+            message = string.Join(" ", result.Errors.Select(error => error.Description))
+        });
+    }
+
+    return Results.Ok(new
+    {
+        message = "Profile updated successfully."
     });
 }).RequireAuthorization();
 

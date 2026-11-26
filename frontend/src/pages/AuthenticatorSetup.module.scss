@@ -1,0 +1,141 @@
+
+.authenticator {
+  margin-top: 25px;
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+
+  h2 {
+    margin: 0 0 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #172554;
+    font-size: 19px;
+  }
+
+  h3 {
+    color: #172554;
+    font-size: 16px;
+  }
+
+  p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  button {
+    margin: 8px 8px 8px 0;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #1d4ed8;
+    }
+
+    &:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    margin: 8px 0 15px;
+    padding: 11px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    letter-spacing: 3px;
+
+    &:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+  }
+}
+
+.qrCode {
+  display: inline-block;
+  margin: 15px 0;
+  padding: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: white;
+}
+
+.secretKey {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #172554;
+  font-family: monospace;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.recoveryCodes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 450px;
+  margin: 15px 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 10px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #172554;
+    font-family: monospace;
+    text-align: center;
+  }
+}
+
+.error {
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.success {
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 13px;
+}
+
+.status {
+  color: #172554;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .authenticator {
+    padding: 20px;
+  }
+
+  .recoveryCodes {
+    grid-template-columns: 1fr;
+  }
+}
