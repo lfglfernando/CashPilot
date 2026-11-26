@@ -15,8 +15,7 @@ namespace CashPilot.Models
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }
         public string? Description { get; set; }
-        public double? Amount { get; set; }
-
+        public decimal? Amount { get; set; }
         public static void MapRoutes(ref WebApplication app)
         {
             // GET: Get one transaction belonging to the authenticated user

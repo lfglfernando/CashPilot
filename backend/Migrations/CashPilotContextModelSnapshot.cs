@@ -96,8 +96,8 @@ namespace CashPilot.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double?>("Amount")
-                        .HasColumnType("REAL");
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("INTEGER");
