@@ -43,6 +43,42 @@
   font-size: 13px;
 }
 
+/* Dashboard Period Filters */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.filterSelect {
+  min-width: 125px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
+}
+
 /* Summary Cards */
 .summary {
   display: grid;
@@ -105,6 +141,20 @@
   color: #16a34a;
 }
 
+.loss .icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.loss .amount {
+  color: #dc2626;
+}
+
+.neutral .icon {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
 .margin .icon {
   background: #ede9fe;
   color: #7c3aed;
@@ -132,7 +182,7 @@
     & p {
       color: #94a3b8;
       font-size: 13px;
-      margin: 7px 0 0;
+      margin: 7px 0 15px;
     }
   }
 }
@@ -164,7 +214,7 @@
 
   & p {
     max-width: 380px;
-    color: #94a3b8;
+    color: #4a4c58;
     font-size: 13px;
     line-height: 1.6;
     margin: 0;
@@ -182,7 +232,7 @@
     gap: 15px;
     padding: 17px 12px;
     border-bottom: 1px solid #f1f5f9;
-    color: #475569;
+    color: #694747;
     font-size: 14px;
 
     & strong {
@@ -193,7 +243,7 @@
     &.heading {
       background: #f8fafc;
       border-radius: 8px;
-      color: #64748b;
+      color: #ff0000;
       font-size: 12px;
       font-weight: 600;
     }
@@ -210,6 +260,59 @@
         color: #15803d;
       }
     }
+  }
+}
+
+.totalLoss {
+  background: #fef2f2;
+  border-radius: 8px;
+  border-bottom: none;
+  margin-top: 10px;
+  color: #b91c1c;
+  font-weight: 700;
+
+  strong {
+    color: #dc2626;
+  }
+}
+
+/* Dashboard Error Message */
+.errorMessage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  p {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 13px;
+  }
+}
+
+/*Error Handler retry button */
+.retryButton {
+  padding: 9px 16px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #b91c1c;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
@@ -234,6 +337,10 @@
     align-self: flex-start;
   }
 
+  .filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
   .section {
     padding: 18px;
   }
@@ -266,5 +373,18 @@
       font-size: 12px;
       padding: 14px 8px;
     }
+  }
+
+  .filters {
+    gap: 10px;
+  }
+
+  .filterGroup {
+    flex: 1;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
   }
 }

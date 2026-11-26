@@ -36,7 +36,7 @@ namespace CashPilot.Data
                     Type = "Income",
                     CategoryId = 1,
                     Description = "Payment -- Order from Mr. Smith",
-                    Amount = 2341.56
+                    Amount = 2341.56m
                 },
                 new Transaction {
                     Id = 2,
@@ -44,7 +44,7 @@ namespace CashPilot.Data
                     Type = "Expense",
                     CategoryId = 4,
                     Description = "Office roof repair",
-                    Amount = 827
+                    Amount = 827m
                 }
             ];
 
