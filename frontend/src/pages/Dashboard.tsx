@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import ExportReportButton from "../components/dashboard/ExportReportButton";
 import styles from "./Dashboard.module.scss";
 import FinancialCharts from "../components/dashboard/FinancialCharts";
 
