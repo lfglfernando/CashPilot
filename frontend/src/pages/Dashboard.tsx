@@ -4,6 +4,7 @@ import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import ExportReportButton from "../components/dashboard/ExportReportButton";
 import styles from "./Dashboard.module.scss";
 import FinancialCharts from "../components/dashboard/FinancialCharts";
+import { formatMoney } from "../utils/currency";
 
 import {
   getDashboardSummary,
@@ -52,12 +53,7 @@ function Dashboard() {
     fetchDashboardData();
   }, [selectedYear, selectedMonth, retryCount]);
 
-  const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(amount);
+  const formatCurrency = formatMoney;
 
   const selectedMonthData = monthlyData.find(
     (item) => item.month === selectedMonth
@@ -293,6 +289,8 @@ function Dashboard() {
               </p>
             </div>
           )}
+
+          <ExportReportButton />
         </section>
       </main>
     </div>
