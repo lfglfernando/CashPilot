@@ -7,16 +7,31 @@ using CashPilot.Endpoints;
 using CashPilot.Calculators;
 
 var builder = WebApplication.CreateBuilder(args);
-//The CORS policy registration
+
+// CORS policy registration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy
+            .WithOrigins("https://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+
+    options.AddPolicy("ProductProfit", policy =>
+    {
+        var origins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        policy
+            .WithOrigins(origins)
+            .WithMethods("POST")
+            .WithHeaders("Content-Type");
     });
 });
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddEndpointsApiExplorer();
@@ -49,28 +64,9 @@ builder.Services
     .AddEntityFrameworkStores<CashPilotContext>();
 
 builder.Services.AddAuthorization();
-// Allow the React frontend to communicate with the backend
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("CashPilotFrontend", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 // OpenAPI
 builder.Services.AddOpenApi();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("ProductProfit", policy =>
-    {
-        var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
-        policy.WithOrigins(origins).WithMethods("POST").WithHeaders("Content-Type");
-    });
-});
 
 var app = builder.Build();
 
@@ -81,14 +77,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
 
-app.UseCors("CashPilotFrontend");
+// Activate CORS policy
+app.UseCors("FrontendPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 // Authentication endpoints
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
+
 // Custom registration endpoint
 app.MapPost("/auth/register-custom", async (
     RegisterRequest request,
@@ -149,7 +147,6 @@ app.MapGet("/profile/me", async (
     });
 }).RequireAuthorization();
 
-
 app.MapPut("/profile/me/photo", async (
     ProfilePhotoRequest request,
     UserManager<ApplicationUser> userManager,
@@ -197,22 +194,16 @@ app.MapPut("/profile/me/photo", async (
     });
 }).RequireAuthorization();
 
-//CORS policy middleware activation
-app.UseCors("FrontendPolicy");
-
-
-// Api Stuff Below
-
 // Transactions
 TransactionCategory.MapRoutes(ref app);
 Transaction.MapRoutes(ref app);
 
-//Dashboard Api Endpoint Route registration
+// Dashboard API endpoints
 DashboardEndpoints.MapRoutes(app);
+
 app.MapProductProfitCalculator();
 
-// Api Stuff Above
-
+// Initialize database in development
 if (app.Environment.IsDevelopment())
 {
     await SeedData.InitDb(app.Services);

@@ -102,9 +102,7 @@ function DashboardSidebar() {
           <span aria-hidden="true">▣</span>
           Calculators
         </NavLink>
-        <div className="sidebar-link disabled">
-          <span>▣</span> Calculators
-        </div>
+        
 
         <NavLink
           to="/profile"

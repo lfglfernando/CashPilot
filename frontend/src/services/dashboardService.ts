@@ -1,5 +1,4 @@
-
-const API_BASE_URL = "http://localhost:5241";
+import API_BASE_URL from "./api";
 
 export interface DashboardSummary {
   year: number;
