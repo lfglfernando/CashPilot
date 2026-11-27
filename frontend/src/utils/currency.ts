@@ -1,5 +1,5 @@
-// The team hasn't decided between GH₵ and USD yet, so the currency is set
-// in one place. Change REPORT_CURRENCY here to switch it.
+// The app uses US dollars (USD). The currency is set in one place so the
+// dashboard and the exported reports always match.
 export type ReportCurrency = "USD" | "GHS";
 
 export const REPORT_CURRENCY: ReportCurrency = "USD";
